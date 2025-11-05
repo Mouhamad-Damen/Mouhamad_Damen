@@ -3,32 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOUHAMAD DAMEN - Cybersecurity Terminal</title>
+    <title>MOUHAMAD DAMEN - Cybersecurity Portfolio</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
-            font-family: 'Source Code Pro', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
         
         body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            color: #00ff00;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
             overflow-x: hidden;
         }
         
+        /* Mode Toggle */
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #00ff00 0%, #008800 100%);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            font-weight: bold;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+        }
+        
+        /* GUI Mode Styles */
+        .gui-mode {
+            display: none;
+        }
+        
+        .gui-mode.active {
+            display: block;
+        }
+        
+        .terminal-mode.hidden {
+            display: none;
+        }
+        
+        .nav-menu {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #00ff00;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-menu a {
+            color: #00ff00;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .nav-menu a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .section-card {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        /* Terminal Styles */
         .terminal-header {
-            background: linear-gradient(90deg, #2d3748 0%, #1a202c 100%);
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
             box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
+            border-bottom: 1px solid #00ff00;
         }
         
         .terminal-body {
-            background: transparent;
-            min-height: calc(100vh - 200px);
-            backdrop-filter: blur(1px);
+            background: rgba(10, 10, 20, 0.8);
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
             border: 1px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
         }
         
         .prompt {
@@ -49,24 +127,22 @@
             color: #00ff88;
         }
         
+        .warning {
+            color: #ffaa00;
+        }
+        
+        .info {
+            color: #4488ff;
+        }
+        
         .title-glow {
-            text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+            text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
             animation: glow 2s ease-in-out infinite alternate;
         }
         
         @keyframes glow {
-            from { text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00; }
-            to { text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00; }
-        }
-        
-        .typing::after {
-            content: '_';
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+            from { text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00; }
+            to { text-shadow: 0 0 25px #00ff00, 0 0 50px #00ff00; }
         }
         
         .command-input {
@@ -75,6 +151,7 @@
             outline: none;
             color: #00ff00;
             caret-color: #00ff00;
+            width: 100%;
         }
         
         .matrix-bg {
@@ -88,344 +165,1327 @@
             z-index: -1;
         }
         
-        .skill-bar {
-            background: linear-gradient(90deg, #00ff00 0%, #008800 100%);
-            height: 6px;
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        .skill-tag {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 136, 0, 0.2));
+            border: 1px solid #00ff00;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.4), rgba(0, 136, 0, 0.4));
+            transform: scale(1.05);
         }
         
         .certification-badge {
             background: linear-gradient(45deg, #00ff00, #008800);
             color: black;
-            padding: 2px 8px;
+            padding: 8px 15px;
             border-radius: 12px;
-            font-size: 0.8em;
+            font-size: 0.9em;
             font-weight: bold;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .hackthebox-rank {
+            background: linear-gradient(45deg, #9fef00, #00ff00);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        /* Command Suggestions */
+        .suggestions {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            margin-bottom: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .suggestions.active {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background: rgba(0, 255, 0, 0.2);
+        }
+        
+        .suggestion-command {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .suggestion-description {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 3px;
+        }
+        
+        /* Quick Links */
+        .quick-links {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .quick-link-btn {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 136, 0, 0.2));
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .quick-link-btn:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.4), rgba(0, 136, 0, 0.4));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+        
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background: #00ff00;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        /* Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% + 15px);
+            background: linear-gradient(180deg, #00ff00 0%, transparent 100%);
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            
+            .title-glow {
+                font-size: 2.5rem;
+            }
+            
+            .section-card {
+                padding: 20px;
+                margin: 15px 0;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .mobile-menu {
+                display: block;
+                background: rgba(26, 26, 46, 0.98);
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 80%;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                padding: 80px 20px 20px;
+            }
+            
+            .mobile-menu.active {
+                left: 0;
+            }
+            
+            .mobile-menu a {
+                display: block;
+                color: #00ff00;
+                padding: 15px;
+                margin: 10px 0;
+                border: 1px solid #00ff00;
+                border-radius: 8px;
+                text-align: center;
+            }
+            
+            .terminal-body {
+                max-height: 400px;
+                font-size: 0.85em;
+            }
+            
+            .quick-link-btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+        
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #00ff00, #008800);
+            color: #000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .scroll-top.active {
+            display: flex;
+        }
+        
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ff00;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .matrix-bg, .mode-toggle, .scroll-top, .hamburger {
+                display: none;
+            }
+            
+            .section-card {
+                border: 1px solid #000;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
     <canvas class="matrix-bg"></canvas>
     
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="terminal-header p-6 rounded-t-lg">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="flex space-x-2">
-                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+    <!-- Mode Toggle Button -->
+    <div class="mode-toggle" id="modeToggle">
+        <i class="fas fa-desktop"></i>
+        <span id="modeText">Mode GUI</span>
+    </div>
+    
+    <!-- Scroll to Top Button -->
+    <div class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <!-- Terminal Mode -->
+    <div class="terminal-mode" id="terminalMode">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="terminal-header p-6 rounded-t-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                        <span class="text-gray-300">mouhamad@damen:~</span>
                     </div>
-                    <span class="text-gray-300">mouhamad@damen</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <i class="fas fa-shield-alt text-green-400"></i>
-                    <i class="fas fa-terminal text-green-400"></i>
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-shield-alt text-green-400"></i>
+                        <i class="fas fa-terminal text-green-400"></i>
+                        <i class="fab fa-hackerrank text-green-400"></i>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Title -->
-        <div class="text-center py-8">
-            <h1 class="text-5xl md:text-7xl font-bold title-glow mb-4">MOUHAMAD DAMEN</h1>
-            <p class="text-xl text-green-400"><i class="fas fa-user-secret"></i> Cybersecurity Student & Ethical Hacker</p>
-            <p class="text-sm text-gray-400 mt-2">Top 3% mondial TryHackMe | @robo2575</p>
-        </div>
+            <!-- Title -->
+            <div class="text-center py-8">
+                <h1 class="text-5xl md:text-7xl font-bold title-glow mb-4">MOUHAMAD DAMEN</h1>
+                <p class="text-xl text-green-400"><i class="fas fa-user-secret"></i> Cybersecurity Student & Ethical Hacker</p>
+                <div class="mt-4">
+                    <span class="hackthebox-rank">HackTheBox: #905 Global | #23 Team</span>
+                    <span class="hackthebox-rank" style="background: linear-gradient(45deg, #1a2332, #2d3748); color: #9fef00;">TryHackMe: Top 3%</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-2">Team: CommandlineKings | Pseudo: @robo2575</p>
+            </div>
 
-        <!-- Terminal Body -->
-        <div class="terminal-body p-6 rounded-b-lg">
-            <div id="terminal-content">
-                <div class="mb-4">
+            <!-- Quick Links for beginners -->
+            <div class="quick-links">
+                <h3 class="text-green-400 text-lg mb-3">
+                    <i class="fas fa-bolt"></i> Rapid access (click to see)
+                </h3>
+                <button class="quick-link-btn" onclick="executeCommand('whoami')">
+                    <i class="fas fa-user"></i> About me
+                </button>
+                <button class="quick-link-btn" onclick="executeCommand('contact')">
+                    <i class="fas fa-envelope"></i> Contact
+                </button>
+                <button class="quick-link-btn" onclick="executeCommand('experience')">
+                    <i class="fas fa-briefcase"></i> Experiences
+                </button>
+                <button class="quick-link-btn" onclick="executeCommand('skills')">
+                    <i class="fas fa-code"></i> Competences
+                </button>
+                <button class="quick-link-btn" onclick="executeCommand('certifications')">
+                    <i class="fas fa-certificate"></i> Certifications
+                </button>
+                <button class="quick-link-btn" onclick="executeCommand('ctf')">
+                    <i class="fas fa-flag"></i> CTFs
+                </button>
+            </div>
+
+            <!-- Terminal Body -->
+            <div class="terminal-body p-6 rounded-b-lg" id="terminalBody">
+                <div id="terminal-content">
+                    <div class="mb-4">
+                        <span class="prompt">mouhamad@damen:~$ </span>
+                        <span class="text-yellow-400">echo "Welcom to my portfolio!"</span>
+                    </div>
+                    <div class="command-output mb-4 pl-4">
+                        Welcom to my portfolio!<br>
+                        Type '<span class="command-highlight" style="color: #00ff00; font-weight: bold;">help</span>' to see the available commands.<br>
+                        <span class="info">💡 New here ? Use the "Rapid access" buttons at the top or type 'help'</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center mt-4 relative">
                     <span class="prompt">mouhamad@damen:~$ </span>
-                    <span class="text-yellow-400">echo "Welcom to my CV!"</span>
-                </div>
-                <div class="command-output mb-4 pl-4">
-                    Welcom to my CV!<br>
-                    Type '<span class="text-green-400">help</span>' to see the available commands.
+                    <input 
+                        type="text" 
+                        id="command-input" 
+                        class="command-input flex-1 ml-2" 
+                        autocomplete="off"
+                        placeholder="Type a command or 'help'..."
+                    >
+                    <div class="suggestions" id="suggestions"></div>
                 </div>
             </div>
-
-            <div class="flex items-center">
-                <span class="prompt">mouhamad@damen:~$ </span>
-                <input 
-                    type="text" 
-                    id="command-input" 
-                    class="command-input flex-1 ml-2" 
-                    autocomplete="off"
-                >
+        </div>
+    </div>
+    
+    <!-- GUI Mode -->
+    <div class="gui-mode" id="guiMode">
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <div style="position: absolute; top: 20px; right: 20px; cursor: pointer;" onclick="toggleMobileMenu()">
+                <i class="fas fa-times" style="font-size: 24px; color: #00ff00;"></i>
+            </div>
+            <a href="#gui-about" onclick="toggleMobileMenu()"><i class="fas fa-user"></i> About me</a>
+            <a href="#gui-experience" onclick="toggleMobileMenu()"><i class="fas fa-briefcase"></i> Experiences</a>
+            <a href="#gui-skills" onclick="toggleMobileMenu()"><i class="fas fa-code"></i> Competences</a>
+            <a href="#gui-certifications" onclick="toggleMobileMenu()"><i class="fas fa-certificate"></i> Certifications</a>
+            <a href="#gui-ctf" onclick="toggleMobileMenu()"><i class="fas fa-flag"></i> CTFs</a>
+            <a href="#gui-education" onclick="toggleMobileMenu()"><i class="fas fa-graduation-cap"></i> Education</a>
+            <a href="#gui-projects" onclick="toggleMobileMenu()"><i class="fas fa-project-diagram"></i> Projects</a>
+            <a href="#gui-contact" onclick="toggleMobileMenu()"><i class="fas fa-envelope"></i> Contact</a>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="nav-menu">
+            <div class="container mx-auto px-4 flex items-center justify-between">
+                <div class="hamburger" onclick="toggleMobileMenu()">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="hidden md:flex space-x-2">
+                    <a href="#gui-about"><i class="fas fa-user"></i> About me</a>
+                    <a href="#gui-experience"><i class="fas fa-briefcase"></i> Experiences</a>
+                    <a href="#gui-skills"><i class="fas fa-code"></i> Competences</a>
+                    <a href="#gui-certifications"><i class="fas fa-certificate"></i> Certifications</a>
+                    <a href="#gui-ctf"><i class="fas fa-flag"></i> CTFs</a>
+                    <a href="#gui-education"><i class="fas fa-graduation-cap"></i> Education</a>
+                    <a href="#gui-projects"><i class="fas fa-project-diagram"></i> Projects</a>
+                    <a href="#gui-contact"><i class="fas fa-envelope"></i> Contact</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="text-center py-8">
+                <h1 class="text-5xl md:text-7xl font-bold title-glow mb-4">MOUHAMAD DAMEN</h1>
+                <p class="text-xl md:text-2xl text-green-400 mb-4">
+                    <i class="fas fa-user-secret"></i> Cybersecurity Student & Ethical Hacker
+                </p>
+                <div class="flex flex-wrap justify-center gap-3 mt-4">
+                    <span class="hackthebox-rank">🏆 HackTheBox: #905 Global</span>
+                    <span class="hackthebox-rank">👥 HackTheBox: #23 Team</span>
+                    <span class="hackthebox-rank" style="background: linear-gradient(45deg, #1a2332, #2d3748); color: #9fef00;">
+                        🎯 TryHackMe: Top 3%
+                    </span>
+                </div>
+                <p class="text-sm text-gray-400 mt-4">
+                    <i class="fas fa-users"></i> Team: CommandlineKings | 
+                    <i class="fas fa-user-circle"></i> Pseudo: @robo2575
+                </p>
+            </div>
+            
+            <!-- About -->
+            <div id="gui-about" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-user"></i> À propos de moi
+                </h2>
+                <div class="text-lg leading-relaxed">
+                    <p class="mb-4">
+                        Étudiant en <strong class="text-green-400">1ère année de cycle ingénieur</strong> à JUNIA ISEN Lille, 
+                        passionné par la <strong class="text-green-400">cybersécurité</strong> et le <strong class="text-green-400">hacking éthique</strong>.
+                    </p>
+                    <div class="bg-green-900 bg-opacity-20 border-l-4 border-green-400 p-4 my-4">
+                        <p class="text-green-400 font-bold">
+                            <i class="fas fa-search"></i> Recherche active d'une alternance de 2 ans en cybersécurité 
+                            à partir de septembre 2026
+                        </p>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-yellow-400 mt-6 mb-3">
+                        <i class="fas fa-trophy"></i> Classements & Réalisations
+                    </h3>
+                    <ul class="list-none space-y-2">
+                        <li><i class="fas fa-star text-yellow-400"></i> HackTheBox: <strong>#905 Classement Global</strong></li>
+                        <li><i class="fas fa-users text-yellow-400"></i> HackTheBox: <strong>#23 Classement d'Équipe</strong> (CommandlineKings)</li>
+                        <li><i class="fas fa-medal text-yellow-400"></i> TryHackMe: <strong>Top 3% mondial</strong></li>
+                    </ul>
+                    
+                    <h3 class="text-xl font-bold text-yellow-400 mt-6 mb-3">
+                        <i class="fas fa-heart"></i> Qualités Professionnelles
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag">💪 Motivé et adaptable</span>
+                        <span class="skill-tag">🤝 Esprit d'équipe</span>
+                        <span class="skill-tag">🧩 Résolution de problèmes</span>
+                        <span class="skill-tag">🔐 Expertise en pentesting</span>
+                        <span class="skill-tag">💻 Développement full-stack</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-yellow-400 mt-6 mb-3">
+                        <i class="fas fa-language"></i> Langues
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>🇫🇷 <strong>Français</strong> - Natif</div>
+                        <div>🇸y <strong>Arabe</strong> - Natif </div>
+                        <div>🇬🇧 <strong>Anglais</strong> - TOEIC 855/990</div>
+                        <div>🇩🇪 <strong>Allemand</strong></div>
+                        <div>🗣️ <strong>Araméen</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Experience -->
+            <div id="gui-experience" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-briefcase"></i> Expériences Professionnelles
+                </h2>
+                
+                <div class="timeline-item">
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-green-400">
+                                Stagiaire Technique Polyvalent
+                            </h3>
+                            <span class="text-yellow-400 font-bold">Juin - Août 2025</span>
+                        </div>
+                        <p class="text-gray-400 mb-3">
+                            <i class="fas fa-building"></i> Rato Adcc - Amora, Portugal
+                        </p>
+                        <ul class="list-none space-y-2">
+                            <li>
+                                <strong class="text-green-400">🔒 Audit de Sécurité:</strong> 
+                                Tests d'intrusion sur applications web, rapport détaillé avec vulnérabilités, CVSS, PoC
+                            </li>
+                            <li>
+                                <strong class="text-green-400">💻 Développement:</strong> 
+                                Création de 4 jeux éducatifs en JavaScript vanilla
+                            </li>
+                            <li>
+                                <strong class="text-green-400">🔧 Électronique:</strong> 
+                                Micro-soudure SMD, réparation hardware, développement d'un cloneur NFC
+                            </li>
+                            <li>
+                                <strong class="text-green-400">🎨 Fabrication:</strong> 
+                                Impression 3D, gravure laser, modélisation
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="bg-blue-900 bg-opacity-20 border border-blue-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-blue-400">
+                                Contrôleur Qualité
+                            </h3>
+                            <span class="text-yellow-400 font-bold">Juin - Juillet 2024</span>
+                        </div>
+                        <p class="text-gray-400 mb-3">
+                            <i class="fas fa-building"></i> Westlake Plastics Europe - Tourcoing
+                        </p>
+                        <ul class="list-none space-y-2">
+                            <li>✓ Contrôle visuel et dimensionnel de prothèses médicales</li>
+                            <li>✓ Assurance qualité et conformité</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="bg-purple-900 bg-opacity-20 border border-purple-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-purple-400">
+                                Animateur BAFA
+                            </h3>
+                            <span class="text-yellow-400 font-bold">2023-2025</span>
+                        </div>
+                        <ul class="list-none space-y-2">
+                            <li>✓ Organisation de jeux et activités</li>
+                            <li>✓ Accompagnement et encadrement d'enfants</li>
+                            <li>✓ Développement de compétences en leadership</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skills -->
+            <div id="gui-skills" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-code"></i> Compétences Techniques
+                </h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-laptop-code"></i> Langages de Programmation
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag">C</span>
+                        <span class="skill-tag">C++</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">PHP</span>
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">HTML/CSS</span>
+                        <span class="skill-tag">SQL</span>
+                        <span class="skill-tag">Assembleur</span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-tools"></i> Frameworks & Outils
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">Tinkercad</span>
+                        <span class="skill-tag">Inkscape</span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-shield-alt"></i> Cybersécurité
+                    </h3>
+                    <div class="mb-3">
+                        <strong class="text-green-400">Compétences:</strong>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="skill-tag">Tests d'intrusion</span>
+                            <span class="skill-tag">Analyse de vulnérabilités</span>
+                            <span class="skill-tag">CTF</span>
+                            <span class="skill-tag">Forensic</span>
+                            <span class="skill-tag">Reverse Engineering</span>
+                        </div>
+                    </div>
+                    <div>
+                        <strong class="text-green-400">Outils:</strong>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="skill-tag">Nmap</span>
+                            <span class="skill-tag">Burp Suite</span>
+                            <span class="skill-tag">Metasploit</span>
+                            <span class="skill-tag">Wireshark</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-microchip"></i> Électronique & Hardware
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag">Micro-soudure (SMD)</span>
+                        <span class="skill-tag">Réparation PC</span>
+                        <span class="skill-tag">Arduino</span>
+                        <span class="skill-tag">Projets NFC</span>
+                        <span class="skill-tag">Impression 3D</span>
+                        <span class="skill-tag">Gravure laser</span>
+                        <span class="skill-tag">Modélisation 3D</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certifications -->
+            <div id="gui-certifications" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-certificate"></i> Certifications
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2">BTJA</div>
+                        <h4 class="font-bold text-green-400">Blue Team Junior Analyst</h4>
+                        <p class="text-gray-400 text-sm">Security Blue Team - Novembre 2025</p>
+                    </div>
+                    
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2">CAPT</div>
+                        <h4 class="font-bold text-green-400">Certified Associate Penetration Tester</h4>
+                        <p class="text-gray-400 text-sm">Hackviser - Octobre 2025</p>
+                    </div>
+                    
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2">CWSE</div>
+                        <h4 class="font-bold text-green-400">Certified Web Security Expert</h4>
+                        <p class="text-gray-400 text-sm">Hackviser - Octobre 2025</p>
+                    </div>
+                    
+                    <div class="bg-blue-900 bg-opacity-20 border border-blue-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2" style="background: linear-gradient(45deg, #4488ff, #0066cc);">Cisco</div>
+                        <h4 class="font-bold text-blue-400">Ethical Hacker</h4>
+                        <p class="text-gray-400 text-sm">Cisco Networking Academy - Juillet 2025</p>
+                    </div>
+                    
+                    <div class="bg-purple-900 bg-opacity-20 border border-purple-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2" style="background: linear-gradient(45deg, #9f7aea, #6b46c1);">THM</div>
+                        <h4 class="font-bold text-purple-400">Web Fundamentals</h4>
+                        <p class="text-gray-400 text-sm">TryHackMe - Juillet 2025</p>
+                    </div>
+                    
+                    <div class="bg-purple-900 bg-opacity-20 border border-purple-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2" style="background: linear-gradient(45deg, #9f7aea, #6b46c1);">THM</div>
+                        <h4 class="font-bold text-purple-400">Junior Penetration Tester</h4>
+                        <p class="text-gray-400 text-sm">TryHackMe - Juin 2025</p>
+                    </div>
+                    
+                    <div class="bg-purple-900 bg-opacity-20 border border-purple-400 rounded-lg p-4">
+                        <div class="certification-badge mb-2" style="background: linear-gradient(45deg, #9f7aea, #6b46c1);">THM</div>
+                        <h4 class="font-bold text-purple-400">PreSecurity Certification</h4>
+                        <p class="text-gray-400 text-sm">TryHackMe - Mai 2025</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTF -->
+            <div id="gui-ctf" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-flag"></i> Compétitions CTF (Capture The Flag)
+                </h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-yellow-400 mb-4">
+                        🏆 Résultats 2025
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-yellow-900 bg-opacity-20 border-l-4 border-yellow-400 p-4">
+                            <div class="flex flex-wrap items-center justify-between">
+                                <span class="font-bold text-yellow-400">172ᵉ / 6000+ équipes</span>
+                                <span class="text-sm text-gray-400">Industrial-intrusion (TryHackMe)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900 bg-opacity-20 border-l-4 border-green-400 p-4">
+                            <div class="flex flex-wrap items-center justify-between">
+                                <span class="font-bold text-green-400">🥇 1ᵉʳ place</span>
+                                <span class="text-sm text-gray-400">Ligue Silver (TryHackMe)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-900 bg-opacity-20 border-l-4 border-blue-400 p-4">
+                            <div class="flex flex-wrap items-center justify-between">
+                                <span class="font-bold text-blue-400">13ᵉ / 69 équipes</span>
+                                <span class="text-sm text-gray-400">DarkNets CTF 2.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-900 bg-opacity-20 border-l-4 border-purple-400 p-4">
+                            <div class="flex flex-wrap items-center justify-between">
+                                <span class="font-bold text-purple-400">832ᵉ / 8100+ équipes</span>
+                                <span class="text-sm text-gray-400">Cyber Apocalypse CTF (HackTheBox)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-pink-900 bg-opacity-20 border-l-4 border-pink-400 p-4">
+                            <div class="flex flex-wrap items-center justify-between">
+                                <span class="font-bold text-pink-400">108ᵉ / 4200+ équipes</span>
+                                <span class="text-sm text-gray-400">Hackfinity Battle (TryHackMe)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-yellow-400 mb-4">
+                        🎯 Résultats 2024
+                    </h3>
+                    <div class="bg-green-900 bg-opacity-20 border-l-4 border-green-400 p-4">
+                        <div class="flex flex-wrap items-center justify-between">
+                            <span class="font-bold text-green-400">4ᵉ place</span>
+                            <span class="text-sm text-gray-400">CTF Interne ISEN Lille</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-5">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">
+                        📊 Plateformes & Profils
+                    </h3>
+                    <div class="space-y-2">
+                        <p><i class="fas fa-user-circle text-green-400"></i> <strong>Pseudo:</strong> @robo2575</p>
+                        <p><i class="fas fa-users text-green-400"></i> <strong>Équipe:</strong> CommandlineKings</p>
+                        <p><i class="fas fa-globe text-green-400"></i> <strong>Plateformes:</strong> HackTheBox, TryHackMe, Medium</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Education -->
+            <div id="gui-education" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-graduation-cap"></i> Formation
+                </h2>
+                
+                <div class="timeline-item">
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-green-400">
+                                2ᵉ année de classe prépa Informatique & Réseaux
+                            </h3>
+                            <span class="text-yellow-400 font-bold">2024-2025</span>
+                        </div>
+                        <p class="text-gray-400 mb-3">
+                            <i class="fas fa-university"></i> JUNIA ISEN Lille
+                        </p>
+                        <ul class="list-none space-y-2">
+                            <li>📱 Création d'une application web de gestion immobilière (React)</li>
+                            <li>🚗 Simulation de trafic à Lille (C++, multithreading)</li>
+                            <li>🎮 Jeu "Sauveur de la Galaxie" sur écran LCD (Arduino)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="bg-blue-900 bg-opacity-20 border border-blue-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-blue-400">
+                                1ᵉ année de classe prépa Informatique & Réseaux
+                            </h3>
+                            <span class="text-yellow-400 font-bold">2023-2024</span>
+                        </div>
+                        <p class="text-gray-400 mb-3">
+                            <i class="fas fa-university"></i> JUNIA ISEN Lille
+                        </p>
+                        <ul class="list-none space-y-2">
+                            <li>🎮 Création du jeu "Link The Dots" (C, JavaScript, PHP)</li>
+                            <li>🌟 Site web pour les fans de Star Wars</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="bg-purple-900 bg-opacity-20 border border-purple-400 rounded-lg p-5">
+                        <div class="flex flex-wrap items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-purple-400">
+                                Baccalauréat Général mention Bien
+                            </h3>
+                            <span class="text-yellow-400 font-bold">2021-2022</span>
+                        </div>
+                        <p class="text-gray-400 mb-3">
+                            <i class="fas fa-school"></i> Lycée Colbert Tourcoing
+                        </p>
+                        <p>Spécialités: Mathématiques, NSI, Sciences de l'Ingénieur</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects -->
+            <div id="gui-projects" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-project-diagram"></i> Projets Techniques
+                </h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-shield-alt"></i> Cybersécurité
+                    </h3>
+                    <ul class="list-none space-y-2">
+                        <li class="bg-green-900 bg-opacity-20 border-l-4 border-green-400 p-3">
+                            🔒 Tests d'intrusion et rapport détaillé pour Rato Adcc (vulnérabilités, CVSS, PoC)
+                        </li>
+                        <li class="bg-green-900 bg-opacity-20 border-l-4 border-green-400 p-3">
+                            🚩 Participation à de nombreux CTF avec classements élevés (Top 1%, Top 3%)
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-laptop-code"></i> Développement
+                    </h3>
+                    <ul class="list-none space-y-2">
+                        <li class="bg-blue-900 bg-opacity-20 border-l-4 border-blue-400 p-3">
+                            🎮 4 jeux éducatifs en JavaScript vanilla (HTML/CSS/JS)
+                        </li>
+                        <li class="bg-blue-900 bg-opacity-20 border-l-4 border-blue-400 p-3">
+                            🏠 Application web de gestion immobilière (React, backend, base de données)
+                        </li>
+                        <li class="bg-blue-900 bg-opacity-20 border-l-4 border-blue-400 p-3">
+                            ⭐ Site web Star Wars avec système d'authentification et messagerie
+                        </li>
+                        <li class="bg-blue-900 bg-opacity-20 border-l-4 border-blue-400 p-3">
+                            🎯 Jeu "Link The Dots" (C, JavaScript, PHP)
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="fas fa-microchip"></i> Électronique & Maker
+                    </h3>
+                    <ul class="list-none space-y-2">
+                        <li class="bg-purple-900 bg-opacity-20 border-l-4 border-purple-400 p-3">
+                            💳 Cloneur de cartes NFC (conception, programmation, tests)
+                        </li>
+                        <li class="bg-purple-900 bg-opacity-20 border-l-4 border-purple-400 p-3">
+                            🎮 Jeu "Sauveur de la Galaxie" sur écran LCD (Arduino)
+                        </li>
+                        <li class="bg-purple-900 bg-opacity-20 border-l-4 border-purple-400 p-3">
+                            🚗 Simulation de trafic urbain (C++, multithreading)
+                        </li>
+                        <li class="bg-purple-900 bg-opacity-20 border-l-4 border-purple-400 p-3">
+                            🛠️ Impression 3D, gravure laser, micro-soudure SMD
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Contact -->
+            <div id="gui-contact" class="section-card">
+                <h2 class="text-3xl font-bold text-green-400 mb-6">
+                    <i class="fas fa-envelope"></i> Contact
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-900 bg-opacity-20 border border-green-400 rounded-lg p-5">
+                        <h3 class="text-xl font-bold text-green-400 mb-4">
+                            <i class="fas fa-id-card"></i> Informations de Contact
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <i class="fas fa-envelope text-green-400"></i>
+                                <strong> Email:</strong><br>
+                                <a href="/cdn-cgi/l/email-protection#8be6e4fef2eae6eaefefeae6eee5cbece6eae2e7a5e8e4e6" class="text-green-400 hover:underline">
+                                    <span class="__cf_email__" data-cfemail="bed3d1cbc7dfd3dfdadadfd3dbd0fed9d3dfd7d290ddd1d3">[email&#160;protected]</span>
+                                </a>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone text-green-400"></i>
+                                <strong> Téléphone:</strong><br>
+                                <a href="tel:+33618760382" class="text-green-400 hover:underline">
+                                    +33 (0)6.18.76.03.82
+                                </a>
+                            </div>
+                            <div>
+                                <i class="fas fa-map-marker-alt text-green-400"></i>
+                                <strong> Localisation:</strong><br>
+                                Lille, France
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-900 bg-opacity-20 border border-blue-400 rounded-lg p-5">
+                        <h3 class="text-xl font-bold text-blue-400 mb-4">
+                            <i class="fas fa-globe"></i> Profils en ligne
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <i class="fas fa-user-circle text-blue-400"></i>
+                                <strong> Pseudo:</strong> @robo2575
+                            </div>
+                            <div>
+                                <i class="fas fa-users text-blue-400"></i>
+                                <strong> Équipe CTF:</strong> CommandlineKings
+                            </div>
+                            <div>
+                                <i class="fab fa-hackerrank text-blue-400"></i>
+                                <strong> Plateformes:</strong><br>
+                                HackTheBox, TryHackMe, Medium
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-yellow-900 bg-opacity-20 border-l-4 border-yellow-400 p-5">
+                    <p class="text-xl font-bold text-yellow-400 mb-2">
+                        <i class="fas fa-briefcase"></i> Disponibilité
+                    </p>
+                    <p class="text-lg">
+                        Recherche active d'une <strong class="text-yellow-400">alternance de 2 ans en cybersécurité</strong> 
+                        à partir de <strong class="text-yellow-400">septembre 2026</strong>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Variables globales
+        let currentMode = 'terminal'; // 'terminal' ou 'gui'
         let currentLang = 'en';
         let commandHistory = [];
         let historyIndex = -1;
+        let suggestionIndex = -1;
+
+        // Commandes disponibles avec descriptions
+        const commands = {
+            help: { desc: 'Affiche cette aide', fr: true, en: true },
+            'lang [fr|en]': { desc: 'Change la langue', fr: true, en: true },
+            contact: { desc: 'Informations de contact', fr: true, en: true },
+            whoami: { desc: 'À propos de moi', fr: true, en: true },
+            experience: { desc: 'Expériences professionnelles', fr: true, en: true },
+            skills: { desc: 'Compétences techniques', fr: true, en: true },
+            certifications: { desc: 'Certifications', fr: true, en: true },
+            ctf: { desc: 'Compétitions CTF', fr: true, en: true },
+            education: { desc: 'Formation', fr: true, en: true },
+            projects: { desc: 'Projets techniques', fr: true, en: true },
+            clear: { desc: 'Effacer le terminal', fr: true, en: true }
+        };
 
         // Données multilingues
         const data = {
             fr: {
                 help: `
 Commandes disponibles:<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">help</span>            - Affiche cette aide<br>
-<span class="text-green-400">lang fr</span>         - Change la langue en français<br>
-<span class="text-green-400">lang en</span>         - Change la langue en anglais<br>
-<span class="text-green-400">contact</span>         - Informations de contact<br>
-<span class="text-green-400">whoami</span>          - À propos de moi<br>
-<span class="text-green-400">experience</span>      - Expériences professionnelles<br>
-<span class="text-green-400">certifications</span> - Certifications et compétences<br>
-<span class="text-green-400">ctf</span>             - Compétitions CTF<br>
-<span class="text-green-400">others</span>          - Autres informations<br>
-<span class="text-green-400">clear</span>          - Effacer le terminal<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">help</span>            - Affiche cette aide<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">lang [fr|en]</span>   - Change la langue<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">contact</span>         - Informations de contact<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">whoami</span>          - À propos de moi<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">experience</span>      - Expériences professionnelles<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">skills</span>          - Compétences techniques<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">certifications</span> - Certifications<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">ctf</span>             - Compétitions CTF<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">education</span>       - Formation<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">projects</span>        - Projets techniques<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">clear</span>           - Effacer le terminal<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="info">💡 Astuce: Utilisez les flèches ↑↓ pour naviguer dans l'historique</span>
                 `,
                 contact: `
-📧 Contact<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-yellow-400">📧 Email:</span>     mouyamaddamen@gmail.com<br>
-<span class="text-yellow-400">📱 Téléphone:</span> +33 (0)6.18.76.03.82<br>
-<span class="text-yellow-400">📍 Localisation:</span> Lille, France<br>
-<span class="text-yellow-400">🔗 Pseudo:</span>    @robo2575 (Medium, TryHackMe, HackTheBox)<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="info">📧 Contact</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">📧 Email:</span>     mouyamaddamen@gmail.com<br>
+<span class="warning">📱 Téléphone:</span> +33 (0)6.18.76.03.82<br>
+<span class="warning">📍 Localisation:</span> Lille, France<br>
+<span class="warning">🔗 Pseudo:</span>    @robo2575 (HTB, TryHackMe, Medium)<br>
+<span class="warning">👥 Équipe:</span>    CommandlineKings<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 whoami: `
-👨‍💻 whoami<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-Étudiant en 2ᵉ année de classe préparatoire à JUNIA ISEN Lille<br>
+<span class="info">👨‍💻 À propos de moi</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+Étudiant en 1ère année de cycle ingénieur à JUNIA ISEN Lille<br>
+<span class="success">Recherche d'une alternance de 2 ans en cybersécurité à partir de septembre 2026</span><br><br>
 
-🏆 <span class="text-green-400">Classé parmi les 3% meilleurs mondiaux sur TryHackMe</span><br>
+<span class="warning">🏆 Classements:</span><br>
+→ HackTheBox: <span class="success">#905 Global Ranking</span><br>
+→ HackTheBox: <span class="success">#23 Team Ranking</span> (CommandlineKings)<br>
+→ TryHackMe: <span class="success">Top 3% mondial</span><br><br>
 
-🎯 À la recherche d'une alternance de 3 ans en cybersécurité 
-   à partir de septembre 2025<br>
+<span class="warning">💪 Qualités:</span><br>
+→ Motivé et adaptable<br>
+→ Solide esprit d'équipe<br>
+→ Passion pour la résolution de problèmes complexes<br>
+→ Expertise en tests d'intrusion et développement<br><br>
 
-💪 Qualités:<br>
-   → Motivé et adaptable<br>
-   → Solide esprit d'équipe <br> 
-   → Passion pour la résolution de problèmes complexes<br>
-   → Expertise en tests d'intrusion et développement<br>
-
-🗣️ Langues:<br>
-   → Français (natif)<br>
-   → Anglais (TOEIC 855/990)<br>
-   → Arabe, Allemand, Aramèen<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="warning">🗣️ Langues:</span><br>
+→ Français (natif)<br>
+→ Anglais (TOEIC 855/990)<br>
+→ Arabe, Allemand, Araméen<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 experience: `
-💼 Expériences Professionnelles<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🔒 Juin 2025 - Aujourd'hui</span><br>
-<span class="text-yellow-400">Pentester, Développeur, Maker</span><br>
-Rato Adcc - Amora, Portugal<br>
-→ Tests d'intrusion<br>
-→ Développement de jeux<br>
-→ Projets maker<br>
+<span class="info">💼 Expériences Professionnelles</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">🔒 Juin - Août 2025</span><br>
+<span class="warning">Stagiaire Technique Polyvalent - Rato Adcc - Amora, Portugal</span><br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Audit de Sécurité Complet</span>: Tests d'intrusion sur applications web<br>
+→ Rapport détaillé (vulnérabilités, CVSS, PoC, grille d'évaluation)<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Développement Full-Stack</span>: Création de 4 jeux éducatifs en JavaScript<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Électronique & Hardware</span>: Micro-soudure, réparation, développement d'un cloneur NFC<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Fabrication Digitale</span>: Impression 3D, gravure laser<br><br>
 
-<span class="text-green-400">🔍 Juin - Juillet 2024</span><br>
-<span class="text-yellow-400">Contrôleur Qualité</span><br>
-Westlake Plastics Europe - Tourcoing<br>
-→ Contrôle visuel et dimensionnel<br>
-→ Prothèses médicales et outils chirurgicaux<br>
+<span class="success">🔍 Juin - Juillet 2024</span><br>
+<span class="warning">Contrôleur Qualité - Westlake Plastics Europe - Tourcoing</span><br>
+→ Contrôle visuel et dimensionnel de prothèses médicales<br><br>
 
-<span class="text-green-400">🎯 Août 2023 / Oct 2023 / Oct 2024 / Fév 2025</span><br>
-<span class="text-yellow-400">Animateur BAFA</span><br>
-→ Organisation de jeux<br>
-→ Accompagnement et encadrement<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="success">🎯 2023-2025</span><br>
+<span class="warning">Animateur BAFA</span><br>
+→ Organisation de jeux, accompagnement et encadrement<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+                `,
+                skills: `
+<span class="info">💻 Compétences Techniques</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">Langages de programmation:</span><br>
+→ C, C++, PHP, Python, JavaScript, Java, HTML/CSS, SQL, Assembleur<br><br>
+
+<span class="warning">Frameworks & Outils:</span><br>
+→ React, Node.js, Tinkercad, Inkscape<br><br>
+
+<span class="warning">Cybersécurité:</span><br>
+→ Tests d'intrusion, analyse de vulnérabilités<br>
+→ CTF (Capture The Flag), forensic, reverse engineering<br>
+→ Outils: Nmap, Burp Suite, Metasploit, Wireshark<br><br>
+
+<span class="warning">Électronique & Hardware:</span><br>
+→ Micro-soudure (SMD), soudure conventionnelle, désoudure<br>
+→ Réparation d'ordinateurs, Arduino, projets NFC<br>
+→ Impression 3D, gravure laser, modélisation 3D<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 certifications: `
-🏅 Certifications & Compétences<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🎖️ Certifications:</span><br>
-→ Ethical Hacker - Cisco Networking Academy (Juillet 2025)<br>
-→ Web Fundamentals - TryHackMe (Juillet 2025)<br>
-→ Junior Penetration Tester - TryHackMe (Juin 2025)<br>
-→ PreSecurity Certification - TryHackMe (Mai 2025)<br>
-
-<span class="text-green-400">💻 Compétences Techniques:</span><br>
-→ Langages: C, C++, PHP, Python, JavaScript<br>
-→ Web: HTML/CSS, React, Node.js<br>
-→ Base de données: SQL<br>
-→ Cybersécurité: Tests d'intrusion, CTF<br>
-
-<span class="text-green-400">🎓 Formation:</span><br>
-→ 2024-2025: 2ᵉ année prépa Informatique & Réseaux (JUNIA ISEN)<br>
-→ 2023-2024: 1ᵉ année prépa Informatique & Réseaux<br>
-→ 2021-2022: Bac général (Math, NSI, SI) mention Bien<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="info">🏅 Certifications</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">BTJA (Blue Team Junior Analyst)</span> – Security Blue Team (Novembre 2025)<br>
+<span class="success">CAPT (Certified Associate Penetration Tester)</span> – Hackviser (Octobre 2025)<br>
+<span class="success">CWSE (Certified Web Security Expert)</span> – Hackviser (Octobre 2025)<br>
+<span class="success">Ethical Hacker</span> – Cisco Networking Academy (Juillet 2025)<br>
+<span class="success">Web Fundamentals</span> – TryHackMe (Juillet 2025)<br>
+<span class="success">Junior Penetration Tester</span> – TryHackMe (Juin 2025)<br>
+<span class="success">PreSecurity Certification</span> – TryHackMe (Mai 2025)<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 ctf: `
-🚩 Compétitions CTF (Capture The Flag)<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🏆 Résultats récents (2025):</span><br>
-→ 172ᵉ / 6000+ équipes - Industrial-intrusion (TryHackMe)<br>
-→ 1ᵉʳ place - Ligue Silver (TryHackMe)<br>
-→ 13ᵉ / 69 équipes - DarkNets CTF 2.0<br>
-→ 832ᵉ / 8100+ équipes - Cyber Apocalypse CTF (HackTheBox)<br>
-→ 108ᵉ / 4200+ équipes - Hackfinity Battle (TryHackMe)<br>
+<span class="info">🚩 Compétitions CTF (Capture The Flag)</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">🏆 Résultats 2025:</span><br>
+→ <span class="success">172ᵉ / 6000+ équipes</span> - Industrial-intrusion (TryHackMe)<br>
+→ <span class="success">1ᵉʳ place</span> - Ligue Silver (TryHackMe)<br>
+→ <span class="success">13ᵉ / 69 équipes</span> - DarkNets CTF 2.0<br>
+→ <span class="success">832ᵉ / 8100+ équipes</span> - Cyber Apocalypse CTF (HackTheBox)<br>
+→ <span class="success">108ᵉ / 4200+ équipes</span> - Hackfinity Battle (TryHackMe)<br><br>
 
-<span class="text-green-400">🎯 Résultats 2024:</span><br>
-→ 4ᵉ place - CTF Interne ISEN Lille<br>
+<span class="warning">🎯 Résultats 2024:</span><br>
+→ <span class="success">4ᵉ place</span> - CTF Interne ISEN Lille<br><br>
 
-<span class="text-green-400">📊 Statistiques globales:</span><br>
-→ TryHackMe: Top 3% mondial<br>
+<span class="warning">📊 Plateformes:</span><br>
+→ HackTheBox, TryHackMe, Medium<br>
 → Pseudo: @robo2575 sur toutes les plateformes<br>
-→ Plateformes: TryHackMe, HackTheBox, Medium<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
-                others: `
-🌟 Autres Informations<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🤝 Bénévolat:</span><br>
-→ Membre de l'association Les Grands Cœurs (2025)<br>
-→ Arbitre Bondues (2022-2023-2024)<br>
-→ Aide au conseil municipal des jeunes de Bondues (2023)<br>
-→ Contribution passage permis vélo et piéton (2022-2023)<br>
+                education: `
+<span class="info">🎓 Formation</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">2024-2025:</span> 2ᵉ année de classe prépa Informatique & Réseaux - JUNIA ISEN<br>
+→ Création d'une application web de gestion immobilière (React)<br>
+→ Simulation de trafic à Lille (C++, multithreading)<br>
+→ Création du jeu "Sauveur de la Galaxie" sur écran LCD (Arduino)<br><br>
 
-<span class="text-green-400">🏃‍♂️ Sports & Hobbies:</span><br>
-→ MMA, Lutte, Grappling, Football<br>
-→ Challenge RAID (ALJ) - 10ᵉ place (2025)<br>
+<span class="success">2023-2024:</span> 1ᵉ année de classe prépa Informatique & Réseaux<br>
+→ Création d'un jeu "Link The Dots" (C, JavaScript, PHP)<br>
+→ Création d'un site web pour les fans de Star Wars<br><br>
 
-<span class="text-green-400">📜 Autres certifications:</span><br>
-→ PSC (Premiers Secours Civiques)<br>
-→ BAFA (Brevet d'Aptitude aux Fonctions d'Animateur)<br>
-→ Permis B<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="success">2021-2022:</span> Bac général (Math, NSI, SI) mention Bien - Lycée Colbert Tourcoing<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+                `,
+                projects: `
+<span class="info">🚀 Projets Techniques</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">🔒 Cybersécurité:</span><br>
+→ Tests d'intrusion et rapport détaillé pour Rato Adcc<br>
+→ Participation à de nombreux CTF avec classements élevés<br><br>
+
+<span class="warning">💻 Développement:</span><br>
+→ 4 jeux éducatifs en JavaScript vanilla (HTML/CSS/JS)<br>
+→ Application web de gestion immobilière (React, backend, BDD)<br>
+→ Site web Star Wars avec système d'authentification et messagerie<br>
+→ Jeu "Link The Dots" (C, JavaScript, PHP)<br><br>
+
+<span class="warning">🔧 Électronique & Maker:</span><br>
+→ Cloneur de cartes NFC (conception, programmation, tests)<br>
+→ Jeu "Sauveur de la Galaxie" sur écran LCD (Arduino)<br>
+→ Simulation de trafic urbain (C++, multithreading)<br>
+→ Impression 3D, gravure laser, micro-soudure<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `
             },
             en: {
                 help: `
 Available commands:<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">help</span>            - Display this help<br>
-<span class="text-green-400">lang fr</span>         - Switch to French<br>
-<span class="text-green-400">lang en</span>         - Switch to English<br>
-<span class="text-green-400">contact</span>         - Contact information<br>
-<span class="text-green-400">whoami</span>          - About me<br>
-<span class="text-green-400">experience</span>      - Professional experience<br>
-<span class="text-green-400">certifications</span> - Certifications and skills<br>
-<span class="text-green-400">ctf</span>             - CTF competitions<br>
-<span class="text-green-400">others</span>          - Other information<br>
-<span class="text-green-400">clear</span>          - Clear terminal<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">help</span>            - Display this help<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">lang [fr|en]</span>   - Switch language<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">contact</span>         - Contact information<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">whoami</span>          - About me<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">experience</span>      - Professional experience<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">skills</span>          - Technical skills<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">certifications</span> - Certifications<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">ctf</span>             - CTF competitions<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">education</span>       - Education<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">projects</span>        - Technical projects<br>
+<span class="command-highlight" style="color: #00ff00; font-weight: bold;">clear</span>           - Clear terminal<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="info">💡 Tip: Use arrow keys ↑↓ to navigate history</span>
                 `,
                 contact: `
-📧 Contact<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-yellow-400">📧 Email:</span>     mouyamaddamen@gmail.com<br>
-<span class="text-yellow-400">📱 Phone:</span>     +33 (0)6.18.76.03.82<br>
-<span class="text-yellow-400">📍 Location:</span>  Lille, France<br>
-<span class="text-yellow-400">🔗 Handle:</span>    @robo2575 (Medium, TryHackMe, HackTheBox)<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="info">📧 Contact</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">📧 Email:</span>     mouyamaddamen@gmail.com<br>
+<span class="warning">📱 Phone:</span>     +33 (0)6.18.76.03.82<br>
+<span class="warning">📍 Location:</span>  Lille, France<br>
+<span class="warning">🔗 Handle:</span>    @robo2575 (HTB, TryHackMe, Medium)<br>
+<span class="warning">👥 Team:</span>      CommandlineKings<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 whoami: `
-👨‍💻 whoami<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-2nd year preparatory class student at JUNIA ISEN Lille<br>
+<span class="info">👨‍💻 About me</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+1st year engineering student at JUNIA ISEN Lille<br>
+<span class="success">Looking for a 2-year cybersecurity apprenticeship starting September 2026</span><br><br>
 
-🏆 <span class="text-green-400">Ranked in the top 3% worldwide on TryHackMe</span><br>
+<span class="warning">🏆 Rankings:</span><br>
+→ HackTheBox: <span class="success">#905 Global Ranking</span><br>
+→ HackTheBox: <span class="success">#23 Team Ranking</span> (CommandlineKings)<br>
+→ TryHackMe: <span class="success">Top 3% worldwide</span><br><br>
 
-🎯 Looking for a 3-year cybersecurity apprenticeship <br>
-   starting September 2025<br>
+<span class="warning">💪 Qualities:</span><br>
+→ Motivated and adaptable<br>
+→ Strong teamwork spirit<br>
+→ Passion for solving complex problems<br>
+→ Expertise in penetration testing and development<br><br>
 
-💪 Qualities:<br>
-   → Motivated and adaptable<br>
-   → Strong teamwork spirit<br>
-   → Passion for solving complex problems<br>
-   → Expertise in penetration testing and development<br>
-
-🗣️ Languages:<br>
-   → French (native)<br>
-   → English (TOEIC 855/990)<br>
-   → Arabic, German, Aramaic<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="warning">🗣️ Languages:</span><br>
+→ French (native)<br>
+→ English (TOEIC 855/990)<br>
+→ Arabic, German, Aramaic<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 experience: `
-💼 Professional Experience<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🔒 June 2025 - Present</span><br>
-<span class="text-yellow-400">Pentester, Developer, Maker</span><br>
-Rato Adcc - Amora, Portugal<br>
-→ Penetration testing<br>
-→ Game development<br>
-→ Maker projects<br>
+<span class="info">💼 Professional Experience</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">🔒 June - August 2025</span><br>
+<span class="warning">Technical Intern - Rato Adcc - Amora, Portugal</span><br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Security Audit</span>: Penetration testing on web applications<br>
+→ Detailed report (vulnerabilities, CVSS, PoC, evaluation grid)<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Full-Stack Development</span>: Creation of 4 educational games in JavaScript<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Electronics & Hardware</span>: Micro-soldering, repair, NFC cloner development<br>
+→ <span class="command-highlight" style="color: #00ff00; font-weight: bold;">Digital Fabrication</span>: 3D printing, laser engraving<br><br>
 
-<span class="text-green-400">🔍 June - July 2024</span><br>
-<span class="text-yellow-400">Quality Controller</span><br>
-Westlake Plastics Europe - Tourcoing<br>
-→ Visual and dimensional control<br>
-→ Medical prostheses and surgical tools<br>
+<span class="success">🔍 June - July 2024</span><br>
+<span class="warning">Quality Controller - Westlake Plastics Europe - Tourcoing</span><br>
+→ Visual and dimensional control of medical prostheses<br><br>
 
-<span class="text-green-400">🎯 Aug 2023 / Oct 2023 / Oct 2024 / Feb 2025</span><br>
-<span class="text-yellow-400">BAFA Instructor</span><br>
-→ Game organization<br>
-→ Supervision and coaching<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="success">🎯 2023-2025</span><br>
+<span class="warning">BAFA Instructor</span><br>
+→ Game organization, supervision and coaching<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+                `,
+                skills: `
+<span class="info">💻 Technical Skills</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">Programming Languages:</span><br>
+→ C, C++, PHP, Python, JavaScript, Java, HTML/CSS, SQL, Assembly<br><br>
+
+<span class="warning">Frameworks & Tools:</span><br>
+→ React, Node.js, Tinkercad, Inkscape<br><br>
+
+<span class="warning">Cybersecurity:</span><br>
+→ Penetration testing, vulnerability analysis<br>
+→ CTF (Capture The Flag), forensic, reverse engineering<br>
+→ Tools: Nmap, Burp Suite, Metasploit, Wireshark<br><br>
+
+<span class="warning">Electronics & Hardware:</span><br>
+→ Micro-soldering (SMD), conventional soldering, desoldering<br>
+→ Computer repair, Arduino, NFC projects<br>
+→ 3D printing, laser engraving, 3D modeling<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 certifications: `
-🏅 Certifications & Skills<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🎖️ Certifications:</span><br>
-→ Ethical Hacker - Cisco Networking Academy (July 2025)<br>
-→ Web Fundamentals - TryHackMe (July 2025)<br>
-→ Junior Penetration Tester - TryHackMe (June 2025)<br>
-→ PreSecurity Certification - TryHackMe (May 2025)<br>
-
-<span class="text-green-400">💻 Technical Skills:</span><br>
-→ Languages: C, C++, PHP, Python, JavaScript<br>
-→ Web: HTML/CSS, React, Node.js<br>
-→ Database: SQL<br>
-→ Cybersecurity: Penetration testing, CTF<br>
-
-<span class="text-green-400">🎓 Education:</span><br>
-→ 2024-2025: 2nd year prep Computer Science & Networks (JUNIA ISEN)<br>
-→ 2023-2024: 1st year prep Computer Science & Networks<br>
-→ 2021-2022: General Baccalaureate (Math, NSI, SI) with honors<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="info">🏅 Certifications</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">BTJA (Blue Team Junior Analyst)</span> – Security Blue Team (November 2025)<br>
+<span class="success">CAPT (Certified Associate Penetration Tester)</span> – Hackviser (October 2025)<br>
+<span class="success">CWSE (Certified Web Security Expert)</span> – Hackviser (October 2025)<br>
+<span class="success">Ethical Hacker</span> – Cisco Networking Academy (July 2025)<br>
+<span class="success">Web Fundamentals</span> – TryHackMe (July 2025)<br>
+<span class="success">Junior Penetration Tester</span> – TryHackMe (June 2025)<br>
+<span class="success">PreSecurity Certification</span> – TryHackMe (May 2025)<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
                 ctf: `
-🚩 CTF Competitions (Capture The Flag)<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🏆 Recent results (2025):</span><br>
-→ 172nd / 6000+ teams - Industrial-intrusion (TryHackMe)<br>
-→ 1st place - Silver League (TryHackMe)<br>
-→ 13th / 69 teams - DarkNets CTF 2.0<br>
-→ 832nd / 8100+ teams - Cyber Apocalypse CTF (HackTheBox)<br>
-→ 108th / 4200+ teams - Hackfinity Battle (TryHackMe)<br>
+<span class="info">🚩 CTF Competitions (Capture The Flag)</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">🏆 2025 Results:</span><br>
+→ <span class="success">172nd / 6000+ teams</span> - Industrial-intrusion (TryHackMe)<br>
+→ <span class="success">1st place</span> - Silver League (TryHackMe)<br>
+→ <span class="success">13th / 69 teams</span> - DarkNets CTF 2.0<br>
+→ <span class="success">832nd / 8100+ teams</span> - Cyber Apocalypse CTF (HackTheBox)<br>
+→ <span class="success">108th / 4200+ teams</span> - Hackfinity Battle (TryHackMe)<br><br>
 
-<span class="text-green-400">🎯 2024 Results:</span><br>
-→ 4th place - Internal CTF ISEN Lille<br>
+<span class="warning">🎯 2024 Results:</span><br>
+→ <span class="success">4th place</span> - Internal CTF ISEN Lille<br><br>
 
-<span class="text-green-400">📊 Global Statistics:</span><br>
-→ TryHackMe: Top 3% worldwide<br>
+<span class="warning">📊 Platforms:</span><br>
+→ HackTheBox, TryHackMe, Medium<br>
 → Handle: @robo2575 on all platforms<br>
-→ Platforms: TryHackMe, HackTheBox, Medium<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `,
-                others: `
-🌟 Other Information<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-<span class="text-green-400">🤝 Volunteering:</span><br>
-→ Member of Les Grands Cœurs association (2025)<br>
-→ Referee in Bondues (2022-2023-2024)<br>
-→ Youth municipal council assistant in Bondues (2023)<br>
-→ Bike and pedestrian license assistance (2022-2023)<br>
+                education: `
+<span class="info">🎓 Education</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="success">2024-2025:</span> 2nd year prep Computer Science & Networks - JUNIA ISEN<br>
+→ Real estate management web application (React)<br>
+→ Traffic simulation in Lille (C++, multithreading)<br>
+→ "Sauveur de la Galaxie" game on LCD screen (Arduino)<br><br>
 
-<span class="text-green-400">🏃‍♂️ Sports & Hobbies:</span><br>
-→ MMA, Wrestling, Grappling, Football<br>
-→ RAID Challenge (ALJ) - 10th place (2025)<br>
+<span class="success">2023-2024:</span> 1st year prep Computer Science & Networks<br>
+→ "Link The Dots" game (C, JavaScript, PHP)<br>
+→ Star Wars fan website<br><br>
 
-<span class="text-green-400">📜 Other certifications:</span><br>
-→ PSC (First Aid)<br>
-→ BAFA (Youth Leader Certificate)<br>
-→ Driving License<br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<span class="success">2021-2022:</span> General Baccalaureate (Math, NSI, SI) with honors - Lycée Colbert Tourcoing<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+                `,
+                projects: `
+<span class="info">🚀 Technical Projects</span><br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
+<span class="warning">🔒 Cybersecurity:</span><br>
+→ Penetration testing and detailed report for Rato Adcc<br>
+→ Participation in numerous CTFs with high rankings<br><br>
+
+<span class="warning">💻 Development:</span><br>
+→ 4 educational games in vanilla JavaScript (HTML/CSS/JS)<br>
+→ Real estate management web application (React, backend, DB)<br>
+→ Star Wars website with authentication and messaging system<br>
+→ "Link The Dots" game (C, JavaScript, PHP)<br><br>
+
+<span class="warning">🔧 Electronics & Maker:</span><br>
+→ NFC card cloner (design, programming, testing)<br>
+→ "Sauveur de la Galaxie" game on LCD screen (Arduino)<br>
+→ Urban traffic simulation (C++, multithreading)<br>
+→ 3D printing, laser engraving, micro-soldering<br>
+<span style="border-top: 1px solid #333; margin: 1rem 0; display: block;"></span>
                 `
             }
         };
+
+        // Toggle entre mode terminal et GUI
+        function toggleMode() {
+            const terminalMode = document.getElementById('terminalMode');
+            const guiMode = document.getElementById('guiMode');
+            const modeText = document.getElementById('modeText');
+            const modeToggle = document.getElementById('modeToggle');
+            
+            if (currentMode === 'terminal') {
+                currentMode = 'gui';
+                terminalMode.classList.add('hidden');
+                guiMode.classList.add('active');
+                modeText.textContent = 'Mode Terminal';
+                modeToggle.innerHTML = '<i class="fas fa-terminal"></i> <span id="modeText">Mode Terminal</span>';
+            } else {
+                currentMode = 'terminal';
+                terminalMode.classList.remove('hidden');
+                guiMode.classList.remove('active');
+                modeText.textContent = 'Mode GUI';
+                modeToggle.innerHTML = '<i class="fas fa-desktop"></i> <span id="modeText">Mode GUI</span>';
+            }
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
 
         // Animation Matrix effet
         function initMatrix() {
@@ -435,18 +1495,18 @@ Westlake Plastics Europe - Tourcoing<br>
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             
-            const chars = '0101011010101001010100101010101101001101111010010101010110101010101010101010101010101';
+            const chars = '01';
             const charArray = chars.split('');
             const fontSize = 14;
             const columns = canvas.width / fontSize;
             const drops = [];
             
             for (let i = 0; i < columns; i++) {
-                drops[i] = 1;
+                drops[i] = Math.random() * 100;
             }
             
             function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillStyle = 'rgba(10, 10, 20, 0.05)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 ctx.fillStyle = '#00ff00';
@@ -466,14 +1526,46 @@ Westlake Plastics Europe - Tourcoing<br>
             setInterval(draw, 35);
         }
 
+        // Suggestions d'autocomplétion
+        function showSuggestions(input) {
+            const suggestions = document.getElementById('suggestions');
+            const filteredCommands = Object.keys(commands).filter(cmd => 
+                cmd.startsWith(input.toLowerCase()) && input.length > 0
+            );
+            
+            if (filteredCommands.length > 0 && input.length > 0) {
+                suggestions.innerHTML = filteredCommands.map((cmd, index) => `
+                    <div class="suggestion-item ${index === suggestionIndex ? 'selected' : ''}" data-command="${cmd}">
+                        <div class="suggestion-command">${cmd}</div>
+                        <div class="suggestion-description">${commands[cmd].desc}</div>
+                    </div>
+                `).join('');
+                suggestions.classList.add('active');
+                
+                // Add click handlers
+                document.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        document.getElementById('command-input').value = this.dataset.command;
+                        suggestions.classList.remove('active');
+                        document.getElementById('command-input').focus();
+                    });
+                });
+            } else {
+                suggestions.classList.remove('active');
+                suggestionIndex = -1;
+            }
+        }
+
         // Gestion des commandes
         function executeCommand(command) {
             const terminal = document.getElementById('terminal-content');
             const [cmd, ...args] = command.toLowerCase().trim().split(' ');
             
             // Ajouter la commande à l'historique
-            commandHistory.push(command);
-            historyIndex = commandHistory.length;
+            if (command.trim()) {
+                commandHistory.push(command);
+                historyIndex = commandHistory.length;
+            }
             
             // Afficher la commande entrée
             const commandLine = document.createElement('div');
@@ -515,6 +1607,10 @@ Westlake Plastics Europe - Tourcoing<br>
                     output = data[currentLang].experience;
                     break;
                     
+                case 'skills':
+                    output = data[currentLang].skills;
+                    break;
+                    
                 case 'certifications':
                     output = data[currentLang].certifications;
                     break;
@@ -523,8 +1619,12 @@ Westlake Plastics Europe - Tourcoing<br>
                     output = data[currentLang].ctf;
                     break;
                     
-                case 'others':
-                    output = data[currentLang].others;
+                case 'education':
+                    output = data[currentLang].education;
+                    break;
+                    
+                case 'projects':
+                    output = data[currentLang].projects;
                     break;
                     
                 case 'clear':
@@ -535,7 +1635,7 @@ Westlake Plastics Europe - Tourcoing<br>
                     return;
                     
                 default:
-                    output = `<span class="error">Command '${cmd}' not found. Type 'help' for available commands.</span>`;
+                    output = `<span class="error">Commande '${cmd}' non trouvée. Tapez 'help' pour les commandes disponibles.</span>`;
                     isError = true;
             }
             
@@ -548,39 +1648,103 @@ Westlake Plastics Europe - Tourcoing<br>
             }
             
             // Faire défiler vers le bas
-            terminal.scrollTop = terminal.scrollHeight;
+            const terminalBody = document.getElementById('terminalBody');
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('command-input');
+            const modeToggle = document.getElementById('modeToggle');
+            const scrollTop = document.getElementById('scrollTop');
+            
+            // Mode toggle
+            modeToggle.addEventListener('click', toggleMode);
+            
+            // Command input
+            input.addEventListener('input', function() {
+                showSuggestions(this.value);
+            });
             
             input.addEventListener('keydown', function(e) {
+                const suggestions = document.getElementById('suggestions');
+                const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
+                
                 if (e.key === 'Enter') {
                     const command = this.value;
                     this.value = '';
+                    suggestions.classList.remove('active');
+                    suggestionIndex = -1;
                     executeCommand(command);
                 } else if (e.key === 'ArrowUp') {
                     e.preventDefault();
-                    if (historyIndex > 0) {
+                    if (suggestions.classList.contains('active') && suggestionItems.length > 0) {
+                        suggestionIndex = Math.max(0, suggestionIndex - 1);
+                        showSuggestions(this.value);
+                    } else if (historyIndex > 0) {
                         historyIndex--;
                         this.value = commandHistory[historyIndex];
                     }
                 } else if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    if (historyIndex < commandHistory.length - 1) {
+                    if (suggestions.classList.contains('active') && suggestionItems.length > 0) {
+                        suggestionIndex = Math.min(suggestionItems.length - 1, suggestionIndex + 1);
+                        showSuggestions(this.value);
+                    } else if (historyIndex < commandHistory.length - 1) {
                         historyIndex++;
                         this.value = commandHistory[historyIndex];
                     } else {
                         historyIndex = commandHistory.length;
                         this.value = '';
                     }
+                } else if (e.key === 'Tab') {
+                    e.preventDefault();
+                    if (suggestionItems.length > 0) {
+                        const selectedIndex = suggestionIndex >= 0 ? suggestionIndex : 0;
+                        this.value = suggestionItems[selectedIndex].dataset.command;
+                        suggestions.classList.remove('active');
+                        suggestionIndex = -1;
+                    }
+                } else if (e.key === 'Escape') {
+                    suggestions.classList.remove('active');
+                    suggestionIndex = -1;
                 }
             });
             
             // Focus automatique sur l'input
             input.focus();
-            document.addEventListener('click', () => input.focus());
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.suggestions')) {
+                    input.focus();
+                }
+            });
+            
+            // Scroll to top button
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollTop.classList.add('active');
+                } else {
+                    scrollTop.classList.remove('active');
+                }
+            });
+            
+            scrollTop.addEventListener('click', scrollToTop);
+            
+            // Smooth scroll for GUI navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
             
             // Initialiser l'animation matrix
             initMatrix();
@@ -590,9 +1754,4 @@ Westlake Plastics Europe - Tourcoing<br>
         });
     </script>
 </body>
-
 </html>
-
-
-
-
